@@ -20,7 +20,7 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
 
         // Récupérer toutes les tâches liées au projet spécifié
         const taches = await db.all(
-            'SELECT * FROM Tache WHERE ID_Projet = ?',
+            'SELECT * FROM Tache WHERE ID_Projet = ? ORDER BY ID_Tache DESC;',
             id
         );
 

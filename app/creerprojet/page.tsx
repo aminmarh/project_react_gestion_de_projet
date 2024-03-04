@@ -38,16 +38,16 @@ const CreateProjectPage: React.FC = () => {
             });
 
             if (response.status === 200) {
-                // Le projet a été créé avec succès
-                console.log('Projet créé avec succès!');
+                alert('Projet créé avec succès!');
             } else {
-                // Gérer les erreurs de création du projet
-                console.error('Erreur lors de la création du projet');
+                alert('Erreur lors de la création du projet');
             }
         } catch (error) {
             console.error('Erreur lors de la communication avec l\'API', error);
         }
     };
+
+    const isFormValid = projectName !== '' && projectDescription !== '';
 
     return (
         <div>
@@ -70,12 +70,12 @@ const CreateProjectPage: React.FC = () => {
                                 <div>
                                     <label className="block mb-2 text-sm font-medium dark:text-white">Description</label>
                                     <div className="mt-1">
-                                        <textarea value={projectDescription} onChange={(e) => setProjectDescription(e.target.value)} rows="3" className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600" placeholder="Description..."></textarea>
+                                        <textarea value={projectDescription} onChange={(e) => setProjectDescription(e.target.value)} className="py-3 px-4 block w-full border-gray-200 rounded-lg text-sm focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none dark:bg-slate-900 dark:border-gray-700 dark:text-gray-400 dark:focus:ring-gray-600" placeholder="Description..."></textarea>
                                     </div>
                                 </div>
 
                                 <div className="mt-6 grid">
-                                    <button onClick={handleCreateProject} className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Créer</button>
+                                    <button onClick={handleCreateProject} disabled={!isFormValid} className="w-full py-3 px-4 inline-flex justify-center items-center gap-x-2 text-sm font-semibold rounded-lg border border-transparent bg-blue-600 text-white hover:bg-blue-700 disabled:opacity-50 disabled:pointer-events-none dark:focus:outline-none dark:focus:ring-1 dark:focus:ring-gray-600">Créer</button>
                                 </div>
                             </form>
                         </div>

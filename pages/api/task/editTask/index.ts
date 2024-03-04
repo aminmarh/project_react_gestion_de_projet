@@ -12,7 +12,7 @@ async function openDB() {
 
 // Handler de l'API POST
 export default async function handler(req: NextApiRequest, res: NextApiResponse) {
-    if (req.method !== 'POST') {
+    if (req.method !== 'PUT') {
         res.status(405).json({ message: 'Method Not Allowed' });
         return;
     }
@@ -22,12 +22,12 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
         const db = await openDB();
 
         // Récupérer les données de la requête
-        const { id, titre, description, effort, etat, idProjet, typeTache } = req.body;
+        const { id, titre, description, effort, etat, idProjet, typetache } = req.body;
 
         // Mettre à jour la tâche dans la base de données
         await db.run(
             `UPDATE Tache SET Titre = ?, Description = ?, Effort = ?, Etat = ?, ID_Projet = ?, TypeTache = ? WHERE ID_Tache = ?`,
-            [titre, description, effort, etat, idProjet, typeTache, id]
+            [titre, description, effort, etat, idProjet, typetache, id]
         );
 
         // Fermer la base de données

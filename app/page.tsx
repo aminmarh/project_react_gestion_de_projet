@@ -1,44 +1,24 @@
-// pages/index.js
 'use client';
-import Link from 'next/link';
-import { Container, Typography, Button, Grid } from '@mui/material';
 
 export default function Home() {
   return (
-    <Container>
-      <Grid
-        container
-        spacing={2}
-        direction="column"
-        justifyContent="center"
-        alignItems="center"
-        style={{ minHeight: '100vh' }}
-      >
-        <Grid item>
-          <Typography variant="h2" component="h1" gutterBottom>
-            Bienvenue!
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Typography variant="body1" gutterBottom>
-            Que souhaitez-vous faire ?
-          </Typography>
-        </Grid>
-        <Grid item>
-          <Link href="/connexion" passHref>
-            <Button variant="contained" color="primary" size="large">
+    <div className="min-h-screen flex items-center justify-center">
+      <div className="text-center">
+        <h1 className="text-4xl font-bold mb-4">Bienvenue!</h1>
+        <p className="text-lg mb-8">Que souhaitez-vous faire ?</p>
+        <div className="space-x-4">
+          <a href="/connexion">
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
               Se connecter
-            </Button>
-          </Link>
-        </Grid>
-        <Grid item>
-          <Link href="/inscription" passHref>
-            <Button variant="contained" color="primary" size="large">
-              S'inscrire
-            </Button>
-          </Link>
-        </Grid>
-      </Grid>
-    </Container>
+            </button>
+          </a>
+          <a href="/inscription">
+            <button className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded">
+              S'inscrire  
+            </button>
+          </a>
+        </div>
+      </div>
+    </div>
   );
 }

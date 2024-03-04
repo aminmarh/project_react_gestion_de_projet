@@ -1,6 +1,5 @@
 'use client';
 import React, { useState } from 'react';
-import { TextField, Button } from '@mui/material';
 import axios from 'axios';
 import { useRouter } from 'next/navigation';
 
@@ -28,35 +27,54 @@ const RegisterPage = () => {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
-            <TextField
-                label="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-            />
-            <TextField
-                label="Prénom"
-                value={firstName}
-                onChange={(e) => setFirstName(e.target.value)}
-                required
-            />
-            <TextField
-                label="Nom"
-                value={lastName}
-                onChange={(e) => setLastName(e.target.value)}
-                required
-            />
-            <TextField
-                label="Mot de passe"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-            />
-            <Button type="submit" variant="contained" color="primary">
+        <form onSubmit={handleSubmit} className="flex flex-col items-center justify-center h-screen">
+            <h1 className="text-3xl font-bold mb-6">Page d'inscription</h1>
+            <div className="flex flex-col space-y-4">
+                <input
+                        type="email"
+                        placeholder="Email"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        className="px-4 py-2 border border-gray-300 rounded-md"
+                        required
+                />
+                <input
+                    type="text"
+                    placeholder="Prénom"
+                    value={firstName}
+                    onChange={(e) => setFirstName(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-md"
+                    required
+                />
+                <input
+                    type="text"
+                    placeholder="Nom"
+                    value={lastName}
+                    onChange={(e) => setLastName(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-md"
+                    required
+                />
+                <input
+                    type="password"
+                    placeholder="Mot de passe"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className="px-4 py-2 border border-gray-300 rounded-md"
+                    required
+                />
+            </div>
+            <button
+                type="submit"
+                className="px-4 py-2 my-4 bg-blue-500 text-white rounded-md"
+            >
                 S'inscrire
-            </Button>
+            </button>
+            <button
+                onClick={() => router.push('/connexion')}
+                className="px-4 py-2 bg-gray-500 text-white rounded-md"
+            >
+                Se connecter
+            </button>
         </form>
     );
 };

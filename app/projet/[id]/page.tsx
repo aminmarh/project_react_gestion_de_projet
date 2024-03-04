@@ -3,13 +3,12 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useCookies } from "react-cookie";
 import Navbar from "@/components/navbar";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Button, MenuItem, Select, SelectChangeEvent, Paper } from "@mui/material";
 import { useRouter } from 'next/navigation';
 
 export default function Projet({ params: { id } }: { params: { id: string } }) {
-  const [cookies, setCookie, removeCookie] = useCookies(['ID_Employe']);
-  const [project, setProject] = useState<any>();
-  const [tasks, setTasks] = useState<any[]>([]);
+  const [cookies] = useCookies(['ID_Employe']);
+  const [Projet, setProjet] = useState<any>();
+  const [taches, setTaches] = useState<any[]>([]);
 
   const [titre, setTitre] = useState('');
   const [description, setDescription] = useState('');
@@ -17,10 +16,9 @@ export default function Projet({ params: { id } }: { params: { id: string } }) {
   const [etat, setEtat] = useState('');
   const [typetache, setTypetache] = useState('');
   const router = useRouter();
+  const [editingTask, setEditingTask] = useState<Task | null>(null);
 
-    if (cookies.ID_Employe === undefined){
-        router.push("/");
-    };
+  const [role, setRole] = useState('');
 
   interface Task {
     ID_Tache: number;
@@ -32,10 +30,31 @@ export default function Projet({ params: { id } }: { params: { id: string } }) {
     TypeTache: string;
   }
 
+  if (cookies.ID_Employe === undefined){
+    router.push("/");
+  };
+
+  useEffect(() => {
+    const fetchRole = async () => {
+      const result = await axios.get('../api/recoverRoleProjet?id_employe=' + cookies.ID_Employe + '&id_project=' + id)
+      console.log(result.data.TypeAcces);
+      setRole(result.data.TypeAcces);
+      } 
+      fetchRole();
+  }, []);
+      
+  function checkRole() {
+    if (role === "lecture seule") {
+      return false;
+    } else if (role === "lecture et écriture") {
+      return true;
+    }
+  }
+
   useEffect(() => {
     const fetchData = async () => {
       const result = await axios.get('../api/recoverProject?userId=' + cookies.ID_Employe + '&projectId=' + id)
-      setProject(result.data[0]);
+      setProjet(result.data[0]);
     }
     fetchData();
   }, []);
@@ -43,7 +62,6 @@ export default function Projet({ params: { id } }: { params: { id: string } }) {
   const idProjet = id;
   const handleAddTask = async (e: React.FormEvent) => {
     e.preventDefault();
-
     try {
       const response = await axios.post('../api/task/createTask', {
         titre,
@@ -54,12 +72,30 @@ export default function Projet({ params: { id } }: { params: { id: string } }) {
         typetache
       });
       window.location.reload();
-
-      // Handle success response
-      console.log(response.data);
+      alert('Tâche ajoutée avec succès');
     } catch (error) {
-      // Handle error
       console.error(error);
+    }
+  };
+
+  const handleEditTask = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (editingTask) {
+      try {
+        const response = await axios.put('../api/task/editTask', {
+          id: editingTask.ID_Tache,
+          titre: titre,
+          description: description,
+          effort: effort,
+          etat: etat,
+          idProjet : editingTask.ID_Projet,
+          typetache,
+        });
+        window.location.reload();
+        console.log(response.data);
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
@@ -69,14 +105,12 @@ export default function Projet({ params: { id } }: { params: { id: string } }) {
       console.log(response.data);
       window.location.reload();
       
-      const updatedTasks = tasks.filter((task) => task.ID_Tache !== taskId);
-      setTasks(updatedTasks);
+      const updatedTasks = taches.filter((task) => task.ID_Tache !== taskId);
+      setTaches(updatedTasks);
     } catch (error) {
       console.error(error);
     }
   };
-
-  const [taches, setTaches] = useState<Task[]>([]);
 
   useEffect(() => {
     const fetchTaches = async () => {
@@ -91,138 +125,117 @@ export default function Projet({ params: { id } }: { params: { id: string } }) {
     fetchTaches();
   }, []);
 
-  const tachesAFaire = taches.filter((tache) => tache.Etat === 'à faire');
-  const tachesEnCours = taches.filter((tache) => tache.Etat === 'en cours');
-  const tachesTerminees = taches.filter((tache) => tache.Etat === 'terminé');
+  useEffect(() => {
+    if (editingTask) {
+      setTitre(editingTask.Titre);
+      setDescription(editingTask.Description);
+      setEffort(editingTask.Effort.toString());
+      setEtat(editingTask.Etat);
+      setTypetache(editingTask.TypeTache);
+    }
+  }, [editingTask]);
 
   return (
-    <div>
+    <div className="bg-gray-100">
       <Navbar />
-      <h1>{project && project.Nom}</h1>
-
-      <TableContainer component={Paper}>
-        <Table aria-label="tableau des tâches">
-          <TableHead>
-            <TableRow>
-              <TableCell><strong>À faire</strong></TableCell>
-              <TableCell><strong>En cours</strong></TableCell>
-              <TableCell><strong>Terminé</strong></TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            <TableRow>
-              <TableCell>
-                {tachesAFaire.map((tache) => (
-                  <div key={tache.ID_Tache}>
-                    <h3>{tache.Titre}</h3>
-                    <p>{tache.Description}</p>
-                    <p>{tache.TypeTache}</p>
-                    <p>{tache.Etat}</p>
-                    <p>{tache.Effort}</p>
-                    <Button onClick={() => handleDeleteTask(tache.ID_Tache)}>Delete</Button>
-                  </div>
-                ))}
-              </TableCell>
-              <TableCell>
-                {tachesEnCours.map((tache) => (
-                  <div key={tache.ID_Tache}>
-                    <h3>{tache.Titre}</h3>
-                    <p>{tache.Description}</p>
-                    <p>{tache.TypeTache}</p>
-                    <p>{tache.Etat}</p>
-                    <p>{tache.Effort}</p>
-                    <Button onClick={() => handleDeleteTask(tache.ID_Tache)}>Delete</Button>
-                  </div>
-                ))}
-              </TableCell>
-              <TableCell>
-                {tachesTerminees.map((tache) => (
-                  <div key={tache.ID_Tache}>
-                    <h3>{tache.Titre}</h3>
-                    <p>{tache.Description}</p>
-                    <p>{tache.TypeTache}</p>
-                    <p>{tache.Etat}</p>
-                    <p>{tache.Effort}</p>
-                    <Button onClick={() => handleDeleteTask(tache.ID_Tache)}>Delete</Button>
-                  </div>
-                ))}
-              </TableCell>
-            </TableRow>
-          </TableBody>
-        </Table>
-      </TableContainer>
-
-      <br />
-      <br />
-      <h1>Create Ticket</h1>
-      <form onSubmit={handleAddTask}>
-        <div>
-          <label htmlFor="titre">Titre:</label>
+      <h1 className="text-3xl font-bold text-center mt-8">{Projet?.Nom}</h1>
+      {checkRole() ? (
+        <form onSubmit={editingTask ? handleEditTask : handleAddTask} className="flex flex-col items-center mt-8">
           <input
             type="text"
-            id="titre"
+            placeholder="Titre"
             value={titre}
             onChange={(e) => setTitre(e.target.value)}
+            className="border border-gray-300 rounded-md px-4 py-2 mb-4 w-80"
           />
-        </div>
-        <div>
-          <label htmlFor="description">Description:</label>
           <textarea
-            id="description"
+            placeholder="Description"
             value={description}
             onChange={(e) => setDescription(e.target.value)}
+            className="border border-gray-300 rounded-md px-4 py-2 mb-4 w-80"
           />
-        </div>
-        <div>
-          <label htmlFor="effort">Effort:</label>
           <select
-            id="effort"
+            value={etat}
+            onChange={(e) => setEtat(e.target.value)}
+            className="border border-gray-300 rounded-md px-4 py-2 mb-4 w-80"
+          >
+            <option value="">Etat</option>
+            <option value="à faire">A faire</option>
+            <option value="en cours">En cours</option>
+            <option value="terminé">Terminé</option>
+          </select>
+          <select
+            value={typetache}
+            onChange={(e) => setTypetache(e.target.value)}
+            className="border border-gray-300 rounded-md px-4 py-2 mb-4 w-80"
+          >
+            <option value="">Type de tâche</option>
+            <option value="technique">Technique</option>
+            <option value="fonctionnalité">Fonctionnalité</option>
+          </select>
+          <select
             value={effort}
             onChange={(e) => setEffort(e.target.value)}
+            className="border border-gray-300 rounded-md px-4 py-2 mb-4 w-80"
           >
-            <option value="">Select Effort</option>
+            <option value="">Effort</option>
             <option value="1">1</option>
             <option value="2">2</option>
             <option value="3">3</option>
             <option value="5">5</option>
             <option value="8">8</option>
-            <option value="13">13</option>
-            <option value="21">21</option>
-            <option value="34">34</option>
-            <option value="55">55</option>
-            <option value="89">89</option>
           </select>
-        </div>
-        <div>
-          <label htmlFor="etat">Etat:</label>
-          <select
-            id="etat"
-            value={etat}
-            onChange={(e) => setEtat(e.target.value)}
+          <button
+            type="submit"
+            className="bg-blue-500 text-white px-4 py-2 rounded-md"
           >
-            <option value="">Select Etat</option>
-            <option value="à faire">à faire</option>
-            <option value="en cours">en cours</option>
-            <option value="terminé">terminé</option>
-          </select>
+            {editingTask ? "Modifier la tâche" : "Ajouter une tâche"}
+          </button>
+        </form>
+      ) : null}
+      <div className="flex justify-center">
+        <div className="w-full mt-8">
+          <table className="w-full table-fixed">
+            <thead>
+              <tr>
+                <th className="border-b border-gray-300 px-4 py-2 text-center">Titre</th>
+                <th className="border-b border-gray-300 px-4 py-2 text-center">Description</th>
+                <th className="border-b border-gray-300 px-4 py-2 text-center">Effort</th>
+                <th className="border-b border-gray-300 px-4 py-2 text-center">État</th>
+                <th className="border-b border-gray-300 px-4 py-2 text-center">Type de tâche</th>
+                {checkRole() ? (<th className="border-b border-gray-300 px-4 py-2 text-center">Actions</th>) : null}
+              </tr>
+            </thead>
+            <tbody>
+              {taches.map((tache: Task) => (
+                <tr key={tache.ID_Tache}>
+                  <td className="border-b border-gray-300 px-4 py-2 text-center">{tache.Titre}</td>
+                  <td className="border-b border-gray-300 px-4 py-2 text-center">{tache.Description}</td>
+                  <td className="border-b border-gray-300 px-4 py-2 text-center">{tache.Effort}</td>
+                  <td className="border-b border-gray-300 px-4 py-2 text-center">{tache.Etat}</td>
+                  <td className="border-b border-gray-300 px-4 py-2 text-center">{tache.TypeTache}</td>
+                  {checkRole() ? (
+                    <td className="border-b border-gray-300 px-4 py-2 text-center">
+                      <button
+                        onClick={() => setEditingTask(tache)}
+                        className="bg-blue-500 text-white px-4 py-2 rounded-md mr-2"
+                      >
+                        Modifier
+                      </button>
+                      <button
+                        onClick={() => handleDeleteTask(tache.ID_Tache)}
+                        className="bg-red-500 text-white px-4 py-2 rounded-md"
+                      >
+                        Supprimer
+                      </button>
+                    </td>
+                  ) : null}
+                </tr>
+              ))}
+            </tbody>
+          </table>
         </div>
-        <div>
-          <label htmlFor="typetache">Type de tâche:</label>
-          <select
-            id="typeTache"
-            value={typetache}
-            onChange={(e) => setTypetache(e.target.value)}
-          >
-            <option value="">Select Type de tâche</option>
-            <option value="technique">Technique</option>
-            <option value="fonctionnalité">Fonctionnalité</option>
-          </select>
-        </div>
-        <button type="submit">Create Ticket</button>
-      </form>
-      <br />
-      <br />
-    
+      </div>
     </div>
-  )
+  );
 }

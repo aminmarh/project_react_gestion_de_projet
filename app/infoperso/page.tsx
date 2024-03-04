@@ -49,6 +49,7 @@ const InformationPage = () => {
                                             <td className="border-b border-gray-300 px-4 py-2 text-sm text-gray-500 text-center">{(data as { Mail: string }).Mail}</td>
                                             <td className="border-b border-gray-300 px-4 py-2 text-sm text-gray-500 text-center">{(data as { Nom: string }).Nom}</td>
                                             <td className="border-b border-gray-300 px-4 py-2 text-sm text-gray-500 text-center">{(data as { Prenom: string }).Prenom}</td>
+                                                                                   
                                         </tr>
                                     )}
                                 </tbody>

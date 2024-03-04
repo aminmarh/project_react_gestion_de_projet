@@ -3,12 +3,18 @@ import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useCookies } from 'react-cookie';
 import Navbar from '@/components/navbar';
+import { useRouter } from 'next/navigation';
 
 const CreateProjectPage: React.FC = () => {
     const [projectName, setProjectName] = useState('');
     const [projectDescription, setProjectDescription] = useState('');
     const [cookies, setCookie, removeCookie] = useCookies(['ID_Employe']);
     const [userRole, setUserRole] = useState<number | null>(null);
+    const router = useRouter();
+
+    if (cookies.ID_Employe === undefined){
+        router.push("/");
+    };
 
     useEffect(() => {
         const fetchUserRole = async () => {

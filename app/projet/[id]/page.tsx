@@ -4,6 +4,7 @@ import axios from "axios";
 import { useCookies } from "react-cookie";
 import Navbar from "@/components/navbar";
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, TextField, Button, MenuItem, Select, SelectChangeEvent, Paper } from "@mui/material";
+import { useRouter } from 'next/navigation';
 
 export default function Projet({ params: { id } }: { params: { id: string } }) {
   const [cookies, setCookie, removeCookie] = useCookies(['ID_Employe']);
@@ -15,6 +16,11 @@ export default function Projet({ params: { id } }: { params: { id: string } }) {
   const [effort, setEffort] = useState('');
   const [etat, setEtat] = useState('');
   const [typetache, setTypetache] = useState('');
+  const router = useRouter();
+
+    if (cookies.ID_Employe === undefined){
+        router.push("/");
+    };
 
   interface Task {
     ID_Tache: number;

@@ -5,16 +5,17 @@ import { useCookies } from 'react-cookie';
 import axios from 'axios';
 import { Table, TableHead, TableBody, TableRow, TableCell, Paper, Typography, Button, TextField } from '@mui/material';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 const Accueil = () => {
     const [cookies] = useCookies(['ID_Employe']);
     const [projects, setProjects] = useState([]);
     const [editingProject, setEditingProject] = useState<string | null>(null);
+    const router = useRouter();
 
-
-
-
-
+    if (cookies.ID_Employe === undefined){
+        router.push("/");
+    };
 
     useEffect(() => {
         const fetchData = async () => { 

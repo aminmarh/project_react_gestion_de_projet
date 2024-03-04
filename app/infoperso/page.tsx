@@ -4,10 +4,16 @@ import axios from 'axios';
 import Navbar from '@/components/navbar';
 import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from '@mui/material';
 import { useCookies } from 'react-cookie';
+import { useRouter } from 'next/navigation';
 
 const InformationPage = () => {
     const [data, setData] = useState();
     const [cookies, setCookie, removeCookie] = useCookies(['ID_Employe']);
+    const router = useRouter();
+
+    if (cookies.ID_Employe === undefined){
+        router.push("/");
+    };
 
     useEffect(() => {
         const fetchData = async () => {

@@ -3,6 +3,7 @@ import React, { useState, useEffect } from 'react';
 import { useCookies } from 'react-cookie';
 import Navbar from '@/components/navbar';
 import axios from 'axios';
+import { useRouter } from 'next/navigation';
 
 const AddUser = () => {
     const [cookies, setCookie, removeCookie] = useCookies(['ID_Employe']);
@@ -12,8 +13,11 @@ const AddUser = () => {
     const [selectedProjets, setSelectedProjets] = useState('');
     const [acces, setAcces] = useState('');
     const [userRole, setUserRole] = useState<number | null>(null);
+    const router = useRouter();
 
-
+    if (cookies.ID_Employe === undefined){
+        router.push("/");
+    };
 
     const handleAddUser = async () => {
         try {

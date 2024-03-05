@@ -69,13 +69,14 @@ const RegisterPage = () => {
             >
                 S'inscrire
             </button>
-            <button
-                onClick={() => router.push('/connexion')}
-                className="px-4 py-2 bg-gray-500 text-white rounded-md"
+            <button type='button'
+            onClick={() => router.push('/connexion')}
+            className="px-4 py-2 bg-gray-500 text-white rounded-md"
             >
                 Se connecter
             </button>
         </form>
+
     );
 };
 
